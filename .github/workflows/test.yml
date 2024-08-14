@@ -1,0 +1,28 @@
+name: Run 1.py Script
+
+on:
+  # 触发条件：每隔5分钟执行一次
+  schedule:
+    - cron: '*/5 * * * *'
+  # 允许手动触发
+  workflow_dispatch:
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run 1.py script
+      run: python 1.py
