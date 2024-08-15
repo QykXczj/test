@@ -85,6 +85,7 @@ response = requests.get(url_main)
 version_number, file_id = parse_html(response)
 download_url = generate_download_url(file_id)
 print(download_url)
+send_VX_Bot_message(download_url)
 
 
 
