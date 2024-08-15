@@ -57,7 +57,7 @@ def generate_download_url(file_id):
         'game_id': '4333',
     }
     try:
-        response = session.post(url, headers=headers, data=data)
+        response = requests.post(url, headers=headers, data=data)
         response.raise_for_status()
         response_data = response.json()
 
