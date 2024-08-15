@@ -40,7 +40,8 @@ def generate_download_url(file_id):
         "Accept-Encoding": "gzip, deflate, br, zstd",
         "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
         "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-        "Cookie": "_ga=GA1.1.629248622.1719590561; _pk_id.1.3564=950705183bd94c2d.1719590561.; fwroute=1722573480.797.1140.57643|b295758090068ae543818c1ba2aeea3e; nexusmods_session=b486138d0382001e53c4c6c709c817c6; nexusmods_session_refresh=1722576817; ab=0|1722586079; _pk_ref.1.3564=%5B%22%22%2C%22%22%2C1722585780%2C%22https%3A%2F%2Fusers.nexusmods.com%2F%22%5D; _pk_ses.1.3564=1; _ga_N0TELNQ37M=GS1.1.1722585776.36.1.1722585780.0.0.0; cf_clearance=AXZNvT44cV_GxbgM2HDTCZg5NfQM9Zng94Gkmvk.XC0-1722585781-1.0.1.1-70dxNju4rj3seiFMOZnS_Yo7OK0SFvEL3MYPqyAWbXJQjSTi2UDC5jWzlnezFVn3flThqAa2GlD3HahEWg8DZA"，
+        # "Cookie": cookies,
+        "Cookie": "_ga=GA1.1.629248622.1719590561; _pk_id.1.3564=950705183bd94c2d.1719590561.; fwroute=1722573480.797.1140.57643|b295758090068ae543818c1ba2aeea3e; nexusmods_session=b486138d0382001e53c4c6c709c817c6; nexusmods_session_refresh=1722576817; ab=0|1722586079; _pk_ref.1.3564=%5B%22%22%2C%22%22%2C1722585780%2C%22https%3A%2F%2Fusers.nexusmods.com%2F%22%5D; _pk_ses.1.3564=1; _ga_N0TELNQ37M=GS1.1.1722585776.36.1.1722585780.0.0.0; cf_clearance=AXZNvT44cV_GxbgM2HDTCZg5NfQM9Zng94Gkmvk.XC0-1722585781-1.0.1.1-70dxNju4rj3seiFMOZnS_Yo7OK0SFvEL3MYPqyAWbXJQjSTi2UDC5jWzlnezFVn3flThqAa2GlD3HahEWg8DZA",
         "Origin": "https://www.nexusmods.com",
         "Sec-Ch-Ua": '"Not/A)Brand";v="8", "Chromium";v="126", "Microsoft Edge";v="126"',
         "Sec-Ch-Ua-Mobile": "?0",
