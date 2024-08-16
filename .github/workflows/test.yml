@@ -14,6 +14,13 @@ on:
 jobs:
   run-script:
     runs-on: ubuntu-latest
+    env:
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      VX_BOT_KEY: ${{ secrets.VX_BOT_KEY }}
+      LOCAL_VERSION: ${{ secrets.LOCAL_VERSION }}
+      COOKIE: ${{ secrets.COOKIE }}
+    
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -48,6 +55,13 @@ jobs:
         # 清理临时文件
         rm gh_1.14.0_linux_amd64.tar.gz
         rm -rf gh_1.14.0_linux_amd64/
+
+    - name: Update Version Secret
+      if: steps.run-script.outputs.version_number != ''
+      env:
+        GH_TOKEN: ${{ secrets.MY_PAT }}
+      run: |        # 使用 GitHub CLI (gh) 更新 secrets
+        gh secret set LOCAL_VERSION --body "${{ steps.run-script.outputs.version_number }}"
 
     - name: Upload to release
       if: steps.run-script.outputs.file_path != ''
