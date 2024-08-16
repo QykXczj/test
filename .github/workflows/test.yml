@@ -40,7 +40,7 @@ jobs:
     - name: Upload to release
       if: steps.run-script.outputs.file_path != ''
       env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_TOKEN: ${{ secrets.TEST_TOKEN }}
         FILE_PATH: ${{ steps.run-script.outputs.file_path }}
         VERSION_NUMBER: ${{ steps.run-script.outputs.version_number }}
       run: |
