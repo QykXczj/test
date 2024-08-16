@@ -111,10 +111,14 @@ class ModDownloader:
 
                 if all_files_extracted:
                     print(f"所有文件已成功解压至 {extract_path}。")
+                    with open("file_path.txt", "w") as file:
+                        file.write(save_path)
+                    with open("version_number.txt", "w") as file:
+                        file.write(version_number)
                     # 删除解压后的文件
                     shutil.rmtree(extract_path)
                     print(f"解压后的文件已被删除。")
-                    return True
+                    return save_path
                 else:
                     print(f"部分文件未正确从 {save_path} 中解压。")
 
