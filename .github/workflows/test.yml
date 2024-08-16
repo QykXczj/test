@@ -37,6 +37,18 @@ jobs:
         echo "file_path=$(cat file_path.txt)" >> $GITHUB_OUTPUT
         echo "version_number=$(cat version_number.txt)" >> $GITHUB_OUTPUT
 
+    - name: Download and install gh CLI
+      run: |
+        # 下载最新版本的预构建二进制文件
+        wget https://github.com/cli/cli/releases/download/v1.14.0/gh_1.14.0_linux_amd64.tar.gz
+        # 解压文件
+        tar -xzf gh_1.14.0_linux_amd64.tar.gz
+        # 将可执行文件移动到 PATH 中
+        mv gh_1.14.0_linux_amd64 /usr/local/bin/
+        # 清理临时文件
+        rm gh_1.14.0_linux_amd64.tar.gz
+        rm -rf gh_1.14.0_linux_amd64/
+
     - name: Upload to release
       if: steps.run-script.outputs.file_path != ''
       env:
@@ -46,10 +58,6 @@ jobs:
       run: |
         # 使用 GitHub CLI (gh) 上传文件
         gh release create "v${VERSION_NUMBER}" "${FILE_PATH}" --title "Release v${VERSION_NUMBER}" --notes "New release."
-
-    - name: Install gh CLI
-      run: |
-        go install github.com/cli/cli/cmd/gh@latest  
 
     - name: Setup Go environment
       uses: actions/setup-go@v4
