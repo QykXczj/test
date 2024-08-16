@@ -45,9 +45,12 @@ jobs:
       run: |
         # 使用 GitHub CLI (gh) 上传文件
         gh release create "v${VERSION_NUMBER}" "${FILE_PATH}" --title "Release v${VERSION_NUMBER}" --notes "New release."
-      # 安装 gh CLI
+
+    - name: Install gh CLI
+      run: |
+        go install github.com/cli/cli@latest
+
+    - name: Setup Go environment
       uses: actions/setup-go@v4
       with:
         go-version: '1.19'  # gh CLI 需要 Go 环境
-      run: |
-        go install github.com/cli/cli@latest
