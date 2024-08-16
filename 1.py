@@ -127,26 +127,6 @@ class ModDownloader:
                 exit(1)
             return False
 
-    # def update_local_version(self, local_version, version_number):
-    #     """更新本地版本。"""
-    #     old_target_path = os.path.join(self.local_path, f"Seamless_Co-op_v{local_version}.zip")
-    #     old_extract_path = os.path.join(self.local_path, f"Seamless_Co-op_v{local_version}")
-    #
-    #     # 清除旧版本的文件
-    #     if os.path.exists(old_target_path):
-    #         os.remove(old_target_path)
-    #         print(f"已删除旧版本的压缩包 {old_target_path}。")
-    #     if os.path.exists(old_extract_path):
-    #         shutil.rmtree(old_extract_path)
-    #         print(f"已删除旧版本的解压文件夹 {old_extract_path}。")
-    #
-    #     # 更新版本信息
-    #     with open(self.config_file_path, 'r') as version_file:
-    #         config_data = json.load(version_file)
-    #     config_data["version"] = version_number
-    #     with open(self.config_file_path, 'w') as version_file:
-    #         json.dump(config_data, version_file, indent=4)
-
     def check_version_before_download(self, version_number):
         """检查本地版本与目标版本，避免重复下载。"""
         target_path = os.path.join(self.local_path, f"Seamless_Co-op_v{version_number}.zip")
