@@ -7,13 +7,20 @@ from bs4 import BeautifulSoup
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 # 禁用安全请求警告
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
-TELEGRAM_BOT_TOKEN = '7438184086:AAGBvptwMKmOttFDWYAXZpnE8KHGJKf8xzo'
-TELEGRAM_CHAT_ID = '5240805827'
-VX_BOT_KEY = '84b5c352-7018-4ca3-9198-7a2e2fb9b0af'
-LOCAL_VERSION = '1.8.3'
 LOCAL_PATH = ''
-COOKIE = '_ga=GA1.1.629248622.1719590561; _pk_id.1.3564=950705183bd94c2d.1719590561.; fwroute=1722573480.797.1140.57643|b295758090068ae543818c1ba2aeea3e; nexusmods_session=b486138d0382001e53c4c6c709c817c6; nexusmods_session_refresh=1722576817; ab=0|1722586079; _pk_ref.1.3564=%5B%22%22%2C%22%22%2C1722585780%2C%22https%3A%2F%2Fusers.nexusmods.com%2F%22%5D; _pk_ses.1.3564=1; _ga_N0TELNQ37M=GS1.1.1722585776.36.1.1722585780.0.0.0; cf_clearance=AXZNvT44cV_GxbgM2HDTCZg5NfQM9Zng94Gkmvk.XC0-1722585781-1.0.1.1-70dxNju4rj3seiFMOZnS_Yo7OK0SFvEL3MYPqyAWbXJQjSTi2UDC5jWzlnezFVn3flThqAa2GlD3HahEWg8DZA'
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+# TELEGRAM_BOT_TOKEN = '7438184086:AAGBvptwMKmOttFDWYAXZpnE8KHGJKf8xzo'
+# TELEGRAM_CHAT_ID = '5240805827'
+# VX_BOT_KEY = '84b5c352-7018-4ca3-9198-7a2e2fb9b0af'
+# LOCAL_VERSION = '1.8.3'
+# COOKIE = '_ga=GA1.1.629248622.1719590561; _pk_id.1.3564=950705183bd94c2d.1719590561.; fwroute=1722573480.797.1140.57643|b295758090068ae543818c1ba2aeea3e; nexusmods_session=b486138d0382001e53c4c6c709c817c6; nexusmods_session_refresh=1722576817; ab=0|1722586079; _pk_ref.1.3564=%5B%22%22%2C%22%22%2C1722585780%2C%22https%3A%2F%2Fusers.nexusmods.com%2F%22%5D; _pk_ses.1.3564=1; _ga_N0TELNQ37M=GS1.1.1722585776.36.1.1722585780.0.0.0; cf_clearance=AXZNvT44cV_GxbgM2HDTCZg5NfQM9Zng94Gkmvk.XC0-1722585781-1.0.1.1-70dxNju4rj3seiFMOZnS_Yo7OK0SFvEL3MYPqyAWbXJQjSTi2UDC5jWzlnezFVn3flThqAa2GlD3HahEWg8DZA'
+
+# 从环境变量中获取 secrets
+TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
+TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
+VX_BOT_KEY = os.getenv('VX_BOT_KEY')
+LOCAL_VERSION = os.getenv('LOCAL_VERSION')
+COOKIE = os.getenv('COOKIE')
 
 class ModDownloader:
     def __init__(self):
