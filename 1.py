@@ -145,14 +145,8 @@ class ModDownloader:
             self.send_VX_Bot_message("发现新版本，开始下载。")
             return True
 
-        # 检查目标路径或解压路径是否存在文件
-        if not (os.path.exists(target_path) and os.path.getsize(target_path) > 0) and \
-           not (os.path.exists(extract_path) and os.listdir(extract_path)):
-            # 目标路径或解压路径不存在或为空，允许下载
-            print("目标路径或解压路径不存在或为空，允许下载。")
-            return True
-
         print("当前版本已是最新，无需重新下载。")
+        self.send_VX_Bot_message("当前版本已是最新，无需重新下载。")
         return False
 
     def send_telegram_message(message):
