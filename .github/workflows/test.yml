@@ -49,7 +49,7 @@ jobs:
 
     - name: Install gh CLI
       run: |
-        go install github.com/cli/cli/cmd/gh@latest
+        go go install github.com/cli/cli/cmd/gh@v1.14.0  # 使用指定版本
 
     - name: Setup Go environment
       uses: actions/setup-go@v4
