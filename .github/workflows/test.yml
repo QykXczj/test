@@ -40,7 +40,7 @@ jobs:
     - name: Upload to release
       if: steps.run-script.outputs.file_path != ''
       env:
-        GH_TOKEN: ${{ secrets.TEST_TOKEN }}
+        GH_TOKEN: ${{ secrets.TEST_TOKEN }}  # 使用个人访问令牌
         FILE_PATH: ${{ steps.run-script.outputs.file_path }}
         VERSION_NUMBER: ${{ steps.run-script.outputs.version_number }}
       run: |
@@ -49,7 +49,7 @@ jobs:
 
     - name: Install gh CLI
       run: |
-        go install github.com/cli/cli@latest
+        go install github.com/cli/cli/cmd/gh@latest
 
     - name: Setup Go environment
       uses: actions/setup-go@v4
