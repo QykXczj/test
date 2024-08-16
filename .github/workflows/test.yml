@@ -33,16 +33,15 @@ jobs:
       id: run-script
       run: |
         python 1.py
-      # 添加输出
-      outputs:
-        file-path: ${{ steps.run-script.outputs.file-path }}
-        version-number: ${{ steps.run-script.outputs.version-number }}
+        # 输出文件路径和版本号
+        echo "file_path=$(cat file_path.txt)" >> $GITHUB_OUTPUT
+        echo "version_number=$(cat version_number.txt)" >> $GITHUB_OUTPUT
 
     - name: Upload to release
-      if: steps.run-script.outputs.file-path != ''
+      if: steps.run-script.outputs.file_path != ''
       env:
-        FILE_PATH: ${{ steps.run-script.outputs.file-path }}
-        VERSION_NUMBER: ${{ steps.run-script.outputs.version-number }}
+        FILE_PATH: ${{ steps.run-script.outputs.file_path }}
+        VERSION_NUMBER: ${{ steps.run-script.outputs.version_number }}
       run: |
         # 使用 GitHub CLI (gh) 上传文件
         gh release create "v${VERSION_NUMBER}" "${FILE_PATH}" --title "Release v${VERSION_NUMBER}" --notes "New release."
