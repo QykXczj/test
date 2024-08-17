@@ -149,17 +149,7 @@ class ModDownloader:
         url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
         payload = {
             'chat_id': TELEGRAM_CHAT_ID,
-            'text': message,
-            'reply_markup': {
-                'inline_keyboard': [
-                    [
-                        {
-                            'text': '问题反馈❓',
-                            'url': 'https://t.me/yxjsjl'
-                        }
-                    ]
-                ]
-            }
+            'text': message
         }
         headers = {
             'Content-Type': 'application/json'
