@@ -146,6 +146,7 @@ class ModDownloader:
         headers = {'Authorization': f'token {GITHUB_PAT}'}
         try:
             response = requests.get(url, headers=headers)
+            print(response.status_code)
             if response.status_code == 200:
                 latest_release = response.json()
                 if latest_release != 404:
