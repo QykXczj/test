@@ -16,6 +16,7 @@ TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 VX_BOT_KEY = os.getenv('VX_BOT_KEY')
 LOCAL_VERSION = os.getenv('LOCAL_VERSION')
 COOKIE = os.getenv('COOKIE')
+GITHUB_PAT = os.getenv('MY_PAT')
 
 class ModDownloader:
     def __init__(self):
@@ -140,7 +141,7 @@ class ModDownloader:
             self.send_VX_Bot_message("发现新版本，开始下载。")
             return True
 
-                """从 GitHub API 获取最新的发行版版本号。"""
+        #从 GitHub API 获取最新的发行版版本号。
         url = "https://api.github.com/repos/QykXczj/test/releases/latest"
         headers = {'Authorization': f'token {GITHUB_PAT}'}
         try:
