@@ -150,19 +150,22 @@ class ModDownloader:
                 latest_release = response.json()
                 if latest_release != 404:
                     if any(isinstance(value, str) and version_number in value for value in latest_release.values()):
-                        self.send_VX_Bot_message("当前版本已是最新，无需重新下载了。")
+                        print("当前版本已是最新，无需重新下载。")
+                        self.send_VX_Bot_message("当前版本已是最新，无需重新下载。")
                         return False
+                    print("发现新版本，开始下载。")
                     self.send_VX_Bot_message("发现新版本，开始下载。")
                     return True
                 else:
+                    print("项目仓库发行版未建立，开始下载。")
                     self.send_VX_Bot_message("项目仓库发行版未建立，开始下载。")
                     return True
         except Exception as e:
                 print(f"仓库项目已不再: {e}")
                 self.send_VX_Bot_message("仓库项目已不再。") 
 
-        print("当前版本已是最新，无需重新下载。")
-        self.send_VX_Bot_message("当前版本已是最新，无需重新下载。")
+        print("当前版本已是最新，无需重新下。")
+        self.send_VX_Bot_message("当前版本已是最新，无需重新下。")
         return False
 
     def send_telegram_message(message):
