@@ -149,10 +149,11 @@ class ModDownloader:
             if response.status_code == 200:
                 latest_release = response.json()
                 if latest_release != 404:
-                    if any(isinstance(value, str) and version_number in value for value in latest_release.values()):
-                        print("当前版本已是最新，无需重新下载。")
-                        self.send_VX_Bot_message("当前版本已是最新，无需重新下载。")
-                        return False
+                    for value in latest_release.values():
+                        if isinstance(value, str) and version_number in value:
+                            print("当前版本已是最新，无需重新下载了。")
+                            self.send_VX_Bot_message("当前版本已是最新，无需重新下载了。")
+                            return False
                     print("发现新版本，开始下载。")
                     self.send_VX_Bot_message("发现新版本，开始下载。")
                     return True
