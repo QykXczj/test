@@ -140,7 +140,25 @@ class ModDownloader:
             self.send_VX_Bot_message("发现新版本，开始下载。")
             return True
 
-        
+                """从 GitHub API 获取最新的发行版版本号。"""
+        url = "https://api.github.com/repos/QykXczj/test/releases/latest"
+        headers = {'Authorization': f'token {GITHUB_PAT}'}
+        try:
+            response = requests.get(url, headers=headers)
+            if response.status_code == 200:
+                latest_release = response.json()
+                if latest_release != 404:
+                    if any(isinstance(value, str) and version_number in value for value in latest_release.values()):
+                        self.send_VX_Bot_message("当前版本已是最新，无需重新下载了。")
+                        return False
+                    self.send_VX_Bot_message("发现新版本，开始下载。")
+                    return True
+                else:
+                    self.send_VX_Bot_message("项目仓库发行版未建立，开始下载。")
+                    return True
+        except Exception as e:
+                print(f"仓库项目已不再: {e}")
+                self.send_VX_Bot_message("仓库项目已不再。") 
 
         print("当前版本已是最新，无需重新下载。")
         self.send_VX_Bot_message("当前版本已是最新，无需重新下载。")
