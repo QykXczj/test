@@ -131,9 +131,6 @@ class ModDownloader:
             return False
 
     def check_version_before_download(self, version_number):
-        """检查本地版本与目标版本，避免重复下载。"""
-        target_path = os.path.join(self.local_path, f"Seamless_Co-op_v{version_number}.zip")
-        extract_path = os.path.join(self.local_path, f"Seamless_Co-op_v{version_number}")
 
         # 比较本地版本与目标版本
         if self.local_version != version_number:
