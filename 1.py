@@ -145,22 +145,21 @@ class ModDownloader:
             response = requests.get(url, headers=headers)
             if response.status_code == 200:
                 latest_release = response.json()
-                if latest_release != 404:
-                    if any(isinstance(value, str) and version_number in value for value in latest_release.values()):
-                        print("当前版本已是最新，无需重新下载了。")
-                        self.send_message("当前版本已是最新，无需重新下载了。")
-                        return False
-                    print(f"发行版发现新版本{version_number}，开始下载。")
-                    self.send_message(f"发行版发现新版本{version_number}，开始下载。")
-                    return True
-                else:
-                    print("项目仓库发行版未建立，开始下载。")
-                    self.send_message("项目仓库发行版未建立，开始下载。")
-                    return True
+                if any(isinstance(value, str) and version_number in value for value in latest_release.values()):
+                    print("当前版本已是最新，无需重新下载了。")
+                    self.send_message("当前版本已是最新，无需重新下载了。")
+                    return False
+                print(f"发行版发现新版本{version_number}，开始下载。")
+                self.send_message(f"发行版发现新版本{version_number}，开始下载。")
+                return True
             elif response.status_code == 401:
-                print("github密钥已失效，前往https://github.com/settings/personal-access-tokens/new")
-                self.send_message("github密钥已失效，前往https://github.com/settings/personal-access-tokens/new")
+                print("github密钥已失效，前往https://github.com/settings/personal-access-tokens/new重新获取")
+                self.send_message("github密钥已失效，前往https://github.com/settings/personal-access-tokens/new重新获取")
                 return False
+            else:
+                print("项目仓库发行版未建立，开始下载。")
+                self.send_message("项目仓库发行版未建立，开始下载。")
+                return True
         except Exception as e:
                 print(f"仓库项目已不再: {e}")
                 self.send_message("仓库项目已不再: {e}")
