@@ -141,8 +141,6 @@ class ModDownloader:
         #从 GitHub API 获取最新的发行版版本号。"""
         url = "https://api.github.com/repos/QykXczj/test/releases/latest"
         headers = {'Authorization': f'token {GITHUB_PAT}'}
-        print(headers)
-        self.send_message(headers)
         try:
             response = requests.get(url, headers=headers)
             if response.status_code == 200:
