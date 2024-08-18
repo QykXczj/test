@@ -134,13 +134,45 @@ class ModDownloader:
 
         # 比较本地版本与目标版本
         if self.local_version != version_number:
-            print("发现新版本，开始下载。")
-            self.send_VX_Bot_message("发现新版本，开始下载。")
+            print(f"发现新版本{version_number}，开始下载。")
+            self.send_message(f"发现新版本{version_number}，开始下载。")
             return True
 
-        print("当前版本已是最新，无需重新下。")
-        self.send_VX_Bot_message("当前版本已是最新，无需重新下。")
+        #从 GitHub API 获取最新的发行版版本号。"""
+        url = "https://api.github.com/repos/QykXczj/test/releases/latest"
+        headers = {'Authorization': f'token {GITHUB_PAT}'}
+        try:
+            response = requests.get(url, headers=headers)
+            if response.status_code == 200:
+                latest_release = response.json()
+                if latest_release != 404:
+                    if any(isinstance(value, str) and version_number in value for value in latest_release.values()):
+                        print("当前版本已是最新，无需重新下载了。")
+                        self.send_message("当前版本已是最新，无需重新下载了。")
+                        return False
+                    print(f"发行版发现新版本{version_number}，开始下载。")
+                    self.send_message(f"发行版发现新版本{version_number}，开始下载。")
+                    return True
+                else:
+                    print("项目仓库发行版未建立，开始下载。")
+                    self.send_message("项目仓库发行版未建立，开始下载。")
+                    return True
+            elif response.status_code == 401:
+                print("github密钥已失效，前往https://github.com/settings/personal-access-tokens/new重新获取")
+                self.send_message("github密钥已失效，前往https://github.com/settings/personal-access-tokens/new重新获取")
+                return False
+        except Exception as e:
+                print(f"仓库项目已不再: {e}")
+                self.send_message("仓库项目已不再: {e}")
+                return False
+
+        print("当前版本已是最新，无需重新下载。~")
+        self.send_message("当前版本已是最新，无需重新下载。~")
         return False
+
+    def send_message(self, message):
+        self.send_telegram_message(message)
+        self.send_VX_Bot_message(message)
 
     def send_telegram_message(message):
         url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
