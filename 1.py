@@ -158,8 +158,8 @@ class ModDownloader:
                     self.send_message("项目仓库发行版未建立，开始下载。")
                     return True
             elif response.status_code == 401:
-                print("github密钥已失效，前往https://github.com/settings/personal-access-tokens/new重新获取")
-                self.send_message("github密钥已失效，前往https://github.com/settings/personal-access-tokens/new重新获取")
+                print("github密钥已失效，前往https://github.com/settings/personal-access-tokens/new")
+                self.send_message("github密钥已失效，前往https://github.com/settings/personal-access-tokens/new")
                 return False
         except Exception as e:
                 print(f"仓库项目已不再: {e}")
