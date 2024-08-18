@@ -16,7 +16,7 @@ TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 VX_BOT_KEY = os.getenv('VX_BOT_KEY')
 LOCAL_VERSION = os.getenv('LOCAL_VERSION')
 COOKIE = os.getenv('COOKIE')
-GITHUB_PAT = os.getenv('MY_PAT')
+GITHUB_PAT = os.getenv('GH_TOKEN')
 
 class ModDownloader:
     def __init__(self):
