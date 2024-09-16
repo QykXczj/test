@@ -22,23 +22,16 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y git expect
 
+    - name: Clone iStoreNAS
+      run: |
+        git clone https://github.com/linkease/iStoreNAS.git
+        cd iStoreNAS
+        chmod +x runmynas.sh
+
     - name: Run Python script
       run: |
-        python 2.py
+        python run_script.py
 
-    # - name: Clone iStoreNAS
-    #   run: |
-    #     git clone https://github.com/linkease/iStoreNAS.git
-    #     cd iStoreNAS
-    #     chmod +x runmynas.sh
-
-    # - name: Run script
-    #   run: |
-    #     cd iStoreNAS
-    #     LD_LIBRARY_PATH=/opt/hostedtoolcache/Python/3.12.5/x64/lib bash -x -c './runmynas.sh rk35xx'
-    #   env:
-    #     LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.5/x64/lib
-    
     - name: Upload to Release
       env:
         GITHUB_TOKEN: ${{ secrets.MY_TOKEN }}
