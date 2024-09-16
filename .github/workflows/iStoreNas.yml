@@ -1,0 +1,36 @@
+name: iStoreNas_rk35xx Upload to Release
+
+on:
+  schedule:
+    - cron:  '0 0 * * *'  # 每天午夜（UTC时间）执行
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y git
+
+    - name: Clone iStoreNAS
+      run: |
+        git clone https://github.com/linkease/iStoreNAS.git
+        cd iStoreNAS
+        chmod +x runmynas.sh
+        ./runmynas.sh rk35xx
+
+    - name: Upload to Release
+      env:
+        GITHUB_TOKEN: ${{ secrets.MY_TOKEN }}
+      run: |
+        cd ib_rk35xx/bin/targets/rockchip/rk35xx
+        gh release create "iStoreNas_rk35xx $(date +'%Y-%m-%d')" . --target main --title "iStoreNas_rk35xx $(date +'%Y-%m-%d')"
