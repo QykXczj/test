@@ -31,7 +31,9 @@ jobs:
     - name: Run script
       run: |
         cd iStoreNAS
-        LD_LIBRARY_PATH=/opt/hostedtoolcache/Python/3.12.5/x64/lib ./runmynas.sh rk35xx
+        LD_LIBRARY_PATH=/opt/hostedtoolcache/Python/3.12.5/x64/lib bash -c './runmynas.sh rk35xx'
+      env:
+        LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.5/x64/lib
 
     - name: Upload to Release
       env:
