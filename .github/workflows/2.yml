@@ -22,7 +22,9 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y git
 
-    
+    - name: Run Python script
+      run: |
+        python 2.py
 
     # - name: Clone iStoreNAS
     #   run: |
