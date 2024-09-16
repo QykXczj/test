@@ -13,5 +13,8 @@ run_command("git clone https://github.com/linkease/iStoreNAS.git")
 # 进入克隆的仓库目录
 os.chdir("iStoreNAS")
 
-# 执行脚本
-run_command("./runmynas.sh rk35xx")
+# 赋予权限
+run_command("chmod +x runmynas.exp")
+
+# 执行 expect 脚本
+run_command("./runmynas.exp")
