@@ -1,4 +1,4 @@
-name: iStoreNas_rk35xx Upload to Release
+name: 2
 
 on:
   schedule:
