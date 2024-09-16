@@ -1,0 +1,4 @@
+#!/usr/bin/expect -f
+set timeout -1
+spawn ./runmynas.sh rk35xx
+expect eof
