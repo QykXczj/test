@@ -1,20 +1,4 @@
-import os
 import subprocess
-
-def run_command(command, cwd=None):
-    try:
-        subprocess.run(command, check=True, shell=True, cwd=cwd)
-    except subprocess.CalledProcessError as e:
-        print(f"命令执行出错: {e}")
-
-# 克隆仓库
-run_command("git clone https://github.com/linkease/iStoreNAS.git")
-
-# 进入克隆的仓库目录
-os.chdir("iStoreNAS")
-
-# 赋予权限
-run_command("chmod +x runmynas.sh")
 
 def create_expect_script():
     expect_script = """
@@ -25,12 +9,17 @@ expect eof
 """
     with open("runmynas.exp", "w") as file:
         file.write(expect_script)
+    subprocess.run(["chmod", "+x", "runmynas.exp"], check=True)
 
-# 创建 expect 脚本并赋予执行权限
-create_expect_script()
+def run_expect_script():
+    subprocess.run(["./runmynas.exp"], check=True)
 
-# 赋予权限
-run_command("chmod +x runmynas.exp")
+def main():
+    # 创建 expect 脚本并赋予执行权限
+    create_expect_script()
+    
+    # 运行 expect 脚本
+    run_expect_script()
 
-# 执行 expect 脚本
-run_command("./runmynas.exp")
+if __name__ == "__main__":
+    main()
