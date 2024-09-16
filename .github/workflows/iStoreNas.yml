@@ -27,7 +27,11 @@ jobs:
         git clone https://github.com/linkease/iStoreNAS.git
         cd iStoreNAS
         chmod +x runmynas.sh
-        ./runmynas.sh rk35xx
+
+    - name: Run script
+      run: |
+        cd iStoreNAS
+        LD_LIBRARY_PATH=/opt/hostedtoolcache/Python/3.12.5/x64/lib ./runmynas.sh rk35xx
 
     - name: Upload to Release
       env:
