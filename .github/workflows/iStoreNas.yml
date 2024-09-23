@@ -8,7 +8,7 @@ on:
       ssh:
         description: 'SSH connection to Actions'
         required: false
-        默认: 'false'
+        default: 'false'
 
 jobs:
   build:
