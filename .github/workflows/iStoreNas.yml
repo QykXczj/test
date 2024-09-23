@@ -4,6 +4,11 @@ on:
   schedule:
     - cron:  '0 0 * * *'  # 每天午夜（UTC时间）执行
   workflow_dispatch:
+    inputs:
+    ssh:
+      description: 'SSH connection to Actions'
+      required: false
+      默认: 'false'
 
 jobs:
   build:
