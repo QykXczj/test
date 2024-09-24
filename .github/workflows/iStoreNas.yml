@@ -40,7 +40,6 @@ jobs:
     - name: Save .config file
       run: |
         cd iStoreNAS/ib_rk35xx/bin/targets/rockchip/rk35xx
-        cp istoreos-rockchip-rk35xx-mangopi_m28k-squashfs-sysupgrade.img.gz /workdir/mangopi_m28k.img.gz
 
     # - name: Run script
     #   run: |
@@ -60,13 +59,13 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: openwrt-mangopi_m28k
-        path: /workdir/mangopi_m28k.img.gz
+        path: istoreos-rockchip-rk35xx-mangopi_m28k-squashfs-sysupgrade.img.gz
 
     - name: Upload file to release
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.MY_PAT }}
-        file: /workdir/mangopi_m28k.img.gz
+        file: istoreos-rockchip-rk35xx-mangopi_m28k-squashfs-sysupgrade.img.gz
         asset_name: istoreos-rockchip-rk35xx-mangopi_m28k-squashfs-sysupgrade.img.gz
         tag: ${{ github.run_id }}
         overwrite: true
