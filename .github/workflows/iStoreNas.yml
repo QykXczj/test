@@ -55,7 +55,7 @@ jobs:
     - name: Upload file to release
       uses: svenstaro/upload-release-action@v2
       with:
-        repo_token: ${{ secrets.MY_TOKEN }}
+        repo_token: ${{ secrets.MY_PAT }}
         file: ~/work/test/test/iStoreNAS/ib_rk35xx/bin/targets/rockchip/rk35xx/istoreos-rockchip-rk35xx-mangopi_m28k-squashfs-sysupgrade.img.gz
         asset_name: istoreos-rockchip-rk35xx-mangopi_m28k-squashfs-sysupgrade.img.gz
         tag: ${{ github.run_id }}
