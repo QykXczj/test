@@ -37,6 +37,11 @@ jobs:
       uses: P3TERX/ssh2actions@v1.0.0
       if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') || contains(github.event.action, 'ssh')
 
+    - name: Save .config file
+      run: |
+        cd iStoreNAS/ib_rk35xx/bin/targets/rockchip/rk35xx
+        cp istoreos-rockchip-rk35xx-mangopi_m28k-squashfs-sysupgrade.img.gz /workdir/mangopi_m28k.img.gz
+
     # - name: Run script
     #   run: |
     #     cd iStoreNAS
@@ -51,12 +56,17 @@ jobs:
     #     cd ~/work/test/test/iStoreNAS/ib_rk35xx/bin/targets/rockchip/rk35xx
     #     gh release create "iStoreNas_rk35xx $(date +'%Y-%m-%d')" . --target main --title "iStoreNas_rk35xx $(date +'%Y-%m-%d')"
 
+    - name: Upload .config file as artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: openwrt-mangopi_m28k
+        path: /workdir/mangopi_m28k.img.gz
 
     - name: Upload file to release
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.MY_PAT }}
-        file: ~/work/test/test/iStoreNAS/ib_rk35xx/bin/targets/rockchip/rk35xx/istoreos-rockchip-rk35xx-mangopi_m28k-squashfs-sysupgrade.img.gz
+        file: /workdir/mangopi_m28k.img.gz
         asset_name: istoreos-rockchip-rk35xx-mangopi_m28k-squashfs-sysupgrade.img.gz
         tag: ${{ github.run_id }}
         overwrite: true
