@@ -44,9 +44,19 @@ jobs:
     #   env:
     #     LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.5/x64/lib
     
-    - name: Upload to Release
-      env:
-        GITHUB_TOKEN: ${{ secrets.MY_PAT }}
-      run: |
-        cd ~/work/test/test/iStoreNAS/ib_rk35xx/bin/targets/rockchip/rk35xx
-        gh release create "iStoreNas_rk35xx $(date +'%Y-%m-%d')" . --target main --title "iStoreNas_rk35xx $(date +'%Y-%m-%d')"
+    # - name: Upload to Release
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.MY_PAT }}
+    #   run: |
+    #     cd ~/work/test/test/iStoreNAS/ib_rk35xx/bin/targets/rockchip/rk35xx
+    #     gh release create "iStoreNas_rk35xx $(date +'%Y-%m-%d')" . --target main --title "iStoreNas_rk35xx $(date +'%Y-%m-%d')"
+
+
+    - name: Upload file to release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.MY_TOKEN }}
+        file: ~/work/test/test/iStoreNAS/ib_rk35xx/bin/targets/rockchip/rk35xx/istoreos-rockchip-rk35xx-mangopi_m28k-squashfs-sysupgrade.img.gz
+        asset_name: istoreos-rockchip-rk35xx-mangopi_m28k-squashfs-sysupgrade.img.gz
+        tag: ${{ github.run_id }}
+        overwrite: true
