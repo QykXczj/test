@@ -34,6 +34,8 @@ jobs:
         chmod +x runmynas.sh
 
     - name: SSH connection to Actions
+      env:
+        GITHUB_TOKEN: ${{ secrets.MY_PAT }}
       uses: P3TERX/ssh2actions@v1.0.0
       if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') || contains(github.event.action, 'ssh')
 
