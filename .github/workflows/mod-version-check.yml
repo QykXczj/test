@@ -1,0 +1,115 @@
+name: Mod Version Check
+
+on:
+  schedule:
+    # 每4小时运行一次 (UTC时间)
+    - cron: '0 */4 * * *'
+  workflow_dispatch: # 允许手动触发
+  push:
+    branches: [ main, master ]
+    paths:
+      - 'mod_version_checker.py'
+      - '.github/workflows/mod-version-check.yml'
+
+jobs:
+  check-mod-versions:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+          
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        
+    - name: Create Version.json if not exists
+      run: |
+        if [ ! -f Version.json ]; then
+          echo "{}" > Version.json
+        fi
+        
+    - name: Run mod version check
+      env:
+        WEBHOOK_URL: ${{ secrets.WECHAT_WEBHOOK_URL }}
+      run: |
+        python mod_version_checker.py
+        
+    - name: Upload logs as artifacts
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: mod-checker-logs-${{ github.run_number }}
+        path: |
+          mod_checker.log
+          Version.json
+        retention-days: 30
+        
+    - name: Commit and push version updates
+      if: success()
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        
+        # 检查是否有变化
+        if git diff --quiet Version.json; then
+          echo "No version changes detected"
+        else
+          echo "Version changes detected, committing..."
+          git add Version.json
+          git commit -m "Auto-update mod versions - $(date '+%Y-%m-%d %H:%M:%S UTC')"
+          git push
+        fi
+        
+    - name: Create issue on failure
+      if: failure()
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const title = `Mod Version Check Failed - ${new Date().toISOString()}`;
+          const body = `
+          ## Mod版本检查失败
+          
+          **时间**: ${new Date().toLocaleString('zh-CN', {timeZone: 'Asia/Shanghai'})}
+          **工作流**: ${context.workflow}
+          **运行ID**: ${context.runId}
+          
+          请检查以下可能的问题：
+          - 网络连接问题
+          - Nexus Mods网站变化
+          - 企业微信webhook配置
+          
+          [查看详细日志](${context.payload.repository.html_url}/actions/runs/${context.runId})
+          `;
+          
+          // 检查是否已存在相同的issue
+          const issues = await github.rest.issues.listForRepo({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            state: 'open',
+            labels: ['mod-check-failure']
+          });
+          
+          if (issues.data.length === 0) {
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: title,
+              body: body,
+              labels: ['mod-check-failure', 'automated']
+            });
+          }
