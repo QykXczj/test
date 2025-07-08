@@ -14,6 +14,10 @@ on:
 jobs:
   check-mod-versions:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # 允许写入仓库内容
+      actions: read    # 允许读取actions
+      issues: write    # 允许创建issues
     
     steps:
     - name: Checkout repository
@@ -67,26 +71,47 @@ jobs:
     - name: Commit and push version updates
       if: success()
       run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
+        # 配置Git用户信息
+        git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
 
-        # 显示Version.json的状态
+        # 显示当前状态
+        echo "=== Current directory ==="
+        pwd
+        ls -la
+
         echo "=== Version.json status ==="
-        ls -la Version.json
-        echo "=== Git status ==="
-        git status --porcelain
-
-        # 检查是否有变化
-        if git diff --quiet Version.json && git diff --cached --quiet Version.json; then
-          echo "No version changes detected in Version.json"
+        if [ -f Version.json ]; then
+          ls -la Version.json
+          echo "Version.json content:"
+          cat Version.json
         else
-          echo "Version changes detected, committing..."
-          echo "=== Changes in Version.json ==="
-          git diff Version.json || echo "New file"
+          echo "Version.json not found!"
+          exit 1
+        fi
 
-          git add Version.json
-          git commit -m "Auto-update mod versions - $(date '+%Y-%m-%d %H:%M:%S UTC')" || echo "Nothing to commit"
-          git push || echo "Push failed, but continuing..."
+        echo "=== Git status ==="
+        git status
+
+        # 添加Version.json到Git
+        git add Version.json
+
+        # 检查是否有变化需要提交
+        if git diff --cached --quiet; then
+          echo "No changes to commit"
+        else
+          echo "Changes detected, committing..."
+          echo "=== Staged changes ==="
+          git diff --cached --name-only
+
+          # 提交变化
+          git commit -m "Auto-update mod versions - $(date '+%Y-%m-%d %H:%M:%S UTC')"
+
+          # 推送到远程仓库
+          echo "Pushing to remote repository..."
+          git push origin ${{ github.ref_name }}
+
+          echo "✅ Version.json successfully committed and pushed"
         fi
         
     - name: Create issue on failure
