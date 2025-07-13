@@ -204,17 +204,37 @@ class ModVersionChecker:
                 prev_version = prev_info.get('version', 'Unknown')
                 curr_version = current_info.get('version', 'Unknown')
 
-                # 版本比较逻辑改进
-                if self._is_version_updated(prev_version, curr_version):
+                # 版本比较逻辑改进 - 传递完整信息对象
+                if self._is_version_updated(prev_info, current_info):
+                    # 确定更新类型
+                    version_changed = prev_version != curr_version
+                    time_changed = (prev_info.get('update_time', 'Unknown') !=
+                                  current_info.get('update_time', 'Unknown'))
+
+                    update_type = []
+                    if version_changed:
+                        update_type.append("版本")
+                    if time_changed:
+                        update_type.append("上传时间")
+
                     updates_found.append({
                         'name': mod_name,
                         'mod_display_name': current_info.get('mod_name', mod_name),
                         'old_version': prev_version,
                         'new_version': curr_version,
+                        'old_update_time': prev_info.get('update_time', 'Unknown'),
+                        'new_update_time': current_info.get('update_time', 'Unknown'),
                         'url': mod_url,
-                        'update_time': current_info.get('update_time', 'Unknown')
+                        'update_type': " + ".join(update_type)
                     })
-                    logging.info(f"发现更新: {mod_name} {prev_version} -> {curr_version}")
+
+                    update_desc = f"{mod_name}"
+                    if version_changed:
+                        update_desc += f" 版本: {prev_version} -> {curr_version}"
+                    if time_changed:
+                        update_desc += f" 时间: {prev_info.get('update_time', 'Unknown')} -> {current_info.get('update_time', 'Unknown')}"
+
+                    logging.info(f"发现更新: {update_desc}")
             else:
                 # 首次检查，记录当前版本但不发送通知
                 logging.info(f"首次记录 {mod_name} 版本: {current_info.get('version', 'Unknown')}")
@@ -238,18 +258,32 @@ class ModVersionChecker:
 
         return current_versions, updates_found
 
-    def _is_version_updated(self, old_version, new_version):
+    def _is_version_updated(self, old_info, new_info):
         """判断版本是否更新"""
+        old_version = old_info.get('version', 'Unknown') if isinstance(old_info, dict) else old_info
+        new_version = new_info.get('version', 'Unknown') if isinstance(new_info, dict) else new_info
+
+        # 基本检查
         if old_version == 'Unknown' or new_version == 'Unknown':
             return False
         if old_version == 'Error' or new_version == 'Error':
             return False
-        if old_version == new_version:
-            return False
 
-        # 简单的版本比较 - 如果版本号不同就认为是更新
-        # 这里可以根据需要实现更复杂的版本比较逻辑
-        return True
+        # 版本号比较
+        version_changed = old_version != new_version
+
+        # 上传时间比较（如果都是字典格式）
+        time_changed = False
+        if isinstance(old_info, dict) and isinstance(new_info, dict):
+            old_time = old_info.get('update_time', 'Unknown')
+            new_time = new_info.get('update_time', 'Unknown')
+
+            if old_time != 'Unknown' and new_time != 'Unknown' and old_time != new_time:
+                time_changed = True
+                logging.info(f"检测到上传时间变化: {old_time} -> {new_time}")
+
+        # 版本号变化或上传时间变化都视为更新
+        return version_changed or time_changed
 
     def _send_update_notification(self, updates):
         """发送更新通知"""
@@ -257,10 +291,25 @@ class ModVersionChecker:
 
         for update in updates:
             display_name = update.get('mod_display_name', update['name'])
+            update_type = update.get('update_type', '版本')
+
             message += f"📦 {display_name}\n"
-            message += f"   版本: {update['old_version']} → {update['new_version']}\n"
-            if update.get('update_time') and update['update_time'] != 'Unknown':
-                message += f"   更新时间: {update['update_time']}\n"
+            message += f"   更新类型: {update_type}\n"
+
+            # 版本信息
+            if update['old_version'] != update['new_version']:
+                message += f"   版本: {update['old_version']} → {update['new_version']}\n"
+            else:
+                message += f"   版本: {update['new_version']}\n"
+
+            # 上传时间信息
+            old_time = update.get('old_update_time', 'Unknown')
+            new_time = update.get('new_update_time', 'Unknown')
+            if old_time != new_time and old_time != 'Unknown' and new_time != 'Unknown':
+                message += f"   上传时间: {old_time} → {new_time}\n"
+            elif new_time != 'Unknown':
+                message += f"   上传时间: {new_time}\n"
+
             message += f"   链接: {update['url']}\n\n"
 
         message += f"检查时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
@@ -297,8 +346,21 @@ def main():
             print("-" * 50)
             for update in updates:
                 display_name = update.get('mod_display_name', update['name'])
+                update_type = update.get('update_type', '版本')
+
                 print(f"📦 {display_name}")
-                print(f"   {update['old_version']} → {update['new_version']}")
+                print(f"   更新类型: {update_type}")
+
+                # 显示版本变化
+                if update['old_version'] != update['new_version']:
+                    print(f"   版本: {update['old_version']} → {update['new_version']}")
+
+                # 显示时间变化
+                old_time = update.get('old_update_time', 'Unknown')
+                new_time = update.get('new_update_time', 'Unknown')
+                if old_time != new_time and old_time != 'Unknown' and new_time != 'Unknown':
+                    print(f"   上传时间: {old_time} → {new_time}")
+
                 print()
         else:
             print("✨ 所有mod都是最新版本")
