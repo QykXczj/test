@@ -37,7 +37,8 @@ class ModVersionChecker:
             "3阶段解锁": "https://www.nexusmods.com/eldenringnightreign/mods/216",
             "黎明至黄昏": "https://www.nexusmods.com/eldenringnightreign/mods/199",
             "无缝联机": "https://www.nexusmods.com/eldenringnightreign/mods/3",
-            "4阶段黑夜王": "https://www.nexusmods.com/eldenringnightreign/mods/273"
+            "4阶段黑夜王": "https://www.nexusmods.com/eldenringnightreign/mods/273",
+            "随机mod": "https://www.nexusmods.com/eldenringnightreign/mods/277"
         }
         self.headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
