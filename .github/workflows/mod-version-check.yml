@@ -3,7 +3,7 @@ name: Mod Version Check
 on:
   schedule:
     # 每4小时运行一次 (UTC时间)
-    - cron: '0 */4 * * *'
+    - cron: '0 */3 * * *'
   workflow_dispatch: # 允许手动触发
   push:
     branches: [ main, master ]
