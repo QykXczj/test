@@ -3,12 +3,13 @@ name: Mod Version Check
 on:
   schedule:
     # 每4小时运行一次 (UTC时间)
-    - cron: '0 */3 * * *'
+    - cron: '0 */4 * * *'
   workflow_dispatch: # 允许手动触发
   push:
     branches: [ main, master ]
     paths:
-      - 'mod_version_checker.py'
+      - 'mod_checker_core.py'
+      - 'mods_config.json'
       - '.github/workflows/mod-version-check.yml'
 
 jobs:
@@ -51,12 +52,13 @@ jobs:
           echo "Current content:"
           cat Version.json
         fi
-        
+
     - name: Run mod version check
       env:
         WEBHOOK_URL: ${{ secrets.WECHAT_WEBHOOK_URL }}
+        NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
       run: |
-        python mod_version_checker.py
+        python mod_checker_core.py
         
     - name: Upload logs as artifacts
       if: always()
@@ -129,6 +131,7 @@ jobs:
           
           请检查以下可能的问题：
           - 网络连接问题
+          - Nexus Mods API密钥配置
           - Nexus Mods网站变化
           - 企业微信webhook配置
           
