@@ -1,134 +1,195 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Nexus Mods版本检查器
-用于监控指定mod的版本更新并发送企业微信通知
+Nexus Mods版本检查器 - 核心版本
+专门用于GitHub Actions自动化，精简版本
 """
 
 import requests
 import json
 import time
 import os
+import random
 from datetime import datetime
-from bs4 import BeautifulSoup
-import logging
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
-# 配置日志
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler('mod_checker.log', encoding='utf-8'),
-        logging.StreamHandler()
-    ]
-)
+# 尝试加载.env文件
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
 
 class ModVersionChecker:
     def __init__(self):
-        # 优先从环境变量读取webhook URL，如果没有则使用默认值
-        self.webhook_url = os.getenv(
-            'WEBHOOK_URL',
-            "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=f749b6e2-22c6-4196-b0b4-f862a9c43867"
-        )
+        self.api_key = os.getenv('NEXUS_API_KEY')
+        self.webhook_url = os.getenv('WEBHOOK_URL')
+        self.api_base_url = "https://api.nexusmods.com/v1"
         self.version_file = "Version.json"
-        self.mods = {
-            "10级难度": "https://www.nexusmods.com/eldenringnightreign/mods/171",
-            "4阶段人马": "https://www.nexusmods.com/eldenringnightreign/mods/243", 
-            "3阶段解锁": "https://www.nexusmods.com/eldenringnightreign/mods/216",
-            "黎明至黄昏": "https://www.nexusmods.com/eldenringnightreign/mods/199",
-            "无缝联机": "https://www.nexusmods.com/eldenringnightreign/mods/3",
-            "4阶段黑夜王": "https://www.nexusmods.com/eldenringnightreign/mods/273",
-            "随机mod": "https://www.nexusmods.com/eldenringnightreign/mods/277",
-            "动作大修mod": "https://www.nexusmods.com/eldenringnightreign/mods/287",
-            "boss大修": "https://www.nexusmods.com/eldenringnightreign/mods/293"
-        }
-        self.headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-            'Accept-Language': 'en-US,en;q=0.5',
-            'Referer': 'https://www.nexusmods.com/',
-            'DNT': '1',
-            'Connection': 'keep-alive'
-        }
         
-    def get_mod_version(self, url):
-        """获取mod的版本信息"""
+        # 从配置文件加载mod列表
+        self.load_mods_config()
+        
+        # 创建会话
+        self.session = requests.Session()
+        retry_strategy = Retry(
+            total=3,
+            backoff_factor=1,
+            status_forcelist=[429, 500, 502, 503, 504],
+        )
+        adapter = HTTPAdapter(max_retries=retry_strategy)
+        self.session.mount("http://", adapter)
+        self.session.mount("https://", adapter)
+    
+    def load_mods_config(self):
+        """从配置文件加载mod列表"""
+        print("📁 正在加载mod配置文件...")
         try:
-            response = requests.get(url, headers=self.headers, timeout=30)
-            response.raise_for_status()
+            with open('mods_config.json', 'r', encoding='utf-8') as f:
+                config = json.load(f)
+                self.game_domain = config.get('game_domain', 'eldenringnightreign')
+                self.mods = {}
 
-            soup = BeautifulSoup(response.content, 'html.parser')
+                for mod in config.get('mods', []):
+                    self.mods[mod['name']] = {
+                        'mod_id': mod['id'],
+                        'game_domain': self.game_domain,
+                        'url': f"https://www.nexusmods.com/{self.game_domain}/mods/{mod['id']}"
+                    }
 
-            # 主要方法：从Twitter meta标签获取版本信息
-            version = None
-            twitter_version_meta = soup.find('meta', {'property': 'twitter:data1'})
-            if twitter_version_meta:
-                version = twitter_version_meta.get('content', '').strip()
+                print(f"✅ 已加载 {len(self.mods)} 个mod配置")
+                for mod_name in self.mods.keys():
+                    print(f"   - {mod_name}")
 
-            # 备用方法1: 从页面标题提取版本号
-            if not version or version == '':
-                title = soup.find('title')
-                if title:
-                    title_text = title.get_text()
-                    # 匹配标题中的版本号模式，如 "Mod Name 1.2.3 at Nexus"
-                    import re
-                    version_match = re.search(r'(\d+\.[\d\.]+)', title_text)
-                    if version_match:
-                        version = version_match.group(1)
+        except FileNotFoundError:
+            error_msg = "❌ 未找到 mods_config.json 配置文件"
+            print(error_msg)
+            self.send_error_notification("配置文件错误", error_msg)
+            raise
+        except Exception as e:
+            error_msg = f"❌ 加载mod配置失败: {str(e)}"
+            print(error_msg)
+            self.send_error_notification("配置文件错误", error_msg)
+            raise
+    
+    def get_api_headers(self):
+        """获取API请求头"""
+        if not self.api_key:
+            return None
+        return {
+            'apikey': self.api_key,
+            'User-Agent': 'ModVersionChecker/2.0',
+            'Content-Type': 'application/json'
+        }
 
-            # 备用方法2: 查找页面中的版本标签
-            if not version or version == '':
-                version_element = soup.find('span', class_='version')
-                if version_element:
-                    version = version_element.get_text(strip=True)
+    def test_api_availability(self):
+        """测试API可用性"""
+        print("🔍 正在测试Nexus Mods API连接...")
 
-            # 获取mod名称
-            mod_name = None
-            og_title_meta = soup.find('meta', {'property': 'og:title'})
-            if og_title_meta:
-                mod_name = og_title_meta.get('content', '').strip()
+        if not self.api_key:
+            error_msg = "❌ 未配置API密钥，无法使用API功能"
+            print(error_msg)
+            self.send_error_notification("API配置错误", error_msg)
+            return False
 
-            # 获取更新时间 - 尝试多种方式
-            update_time = None
+        try:
+            headers = self.get_api_headers()
+            # 测试用户验证接口
+            response = self.session.get(
+                "https://api.nexusmods.com/v1/users/validate.json",
+                headers=headers,
+                timeout=30
+            )
 
-            # 方法1: 查找time标签
-            time_element = soup.find('time')
-            if time_element:
-                update_time = time_element.get('datetime') or time_element.get_text(strip=True)
-
-            # 方法2: 查找更新日期相关的文本
-            if not update_time:
-                date_patterns = [
-                    r'Updated:\s*([^<\n]+)',
-                    r'Last updated:\s*([^<\n]+)',
-                    r'(\d{1,2}[/-]\d{1,2}[/-]\d{2,4})',
-                    r'(\d{4}-\d{2}-\d{2})'
-                ]
-                page_text = soup.get_text()
-                for pattern in date_patterns:
-                    match = re.search(pattern, page_text, re.IGNORECASE)
-                    if match:
-                        update_time = match.group(1).strip()
-                        break
-
-            return {
-                'version': version or 'Unknown',
-                'mod_name': mod_name or 'Unknown',
-                'update_time': update_time or 'Unknown',
-                'last_checked': datetime.now().isoformat(),
-                'url': url
-            }
+            if response.status_code == 200:
+                user_info = response.json()
+                print(f"✅ API连接成功，用户: {user_info.get('name', 'Unknown')}")
+                return True
+            else:
+                error_msg = f"❌ API连接失败，状态码: {response.status_code}"
+                print(error_msg)
+                self.send_error_notification("API连接失败", f"{error_msg}\n响应: {response.text[:200]}")
+                return False
 
         except Exception as e:
-            logging.error(f"获取版本信息失败 {url}: {str(e)}")
+            error_msg = f"❌ API连接异常: {str(e)}"
+            print(error_msg)
+            self.send_error_notification("API连接异常", error_msg)
+            return False
+    
+    def get_mod_info_via_api(self, game_domain, mod_id):
+        """通过API获取mod信息"""
+        if not self.api_key:
+            return None
+            
+        try:
+            headers = self.get_api_headers()
+            url = f"{self.api_base_url}/games/{game_domain}/mods/{mod_id}.json"
+            
+            response = self.session.get(url, headers=headers, timeout=30)
+            response.raise_for_status()
+            
+            data = response.json()
+            
+            # 获取最新文件信息
+            files_url = f"{self.api_base_url}/games/{game_domain}/mods/{mod_id}/files.json"
+            files_response = self.session.get(files_url, headers=headers, timeout=30)
+            files_response.raise_for_status()
+            
+            files_data = files_response.json()
+            
+            # 找到最新的主文件
+            latest_file = None
+            latest_date = None
+            
+            for file_info in files_data.get('files', []):
+                if file_info.get('category_id') == 1:  # 主文件
+                    file_date = file_info.get('uploaded_timestamp')
+                    if latest_date is None or file_date > latest_date:
+                        latest_date = file_date
+                        latest_file = file_info
+            
+            # 构建返回信息
+            version = latest_file.get('version', 'Unknown') if latest_file else data.get('version', 'Unknown')
+            update_time = latest_file.get('uploaded_time', 'Unknown') if latest_file else data.get('updated_time', 'Unknown')
+            
             return {
-                'version': 'Error',
-                'mod_name': 'Error',
-                'update_time': 'Error',
+                'version': version,
+                'mod_name': data.get('name', 'Unknown'),
+                'update_time': update_time,
                 'last_checked': datetime.now().isoformat(),
-                'url': url,
-                'error': str(e)
+                'url': f"https://www.nexusmods.com/{game_domain}/mods/{mod_id}",
+                'method': 'API'
             }
+            
+        except Exception as e:
+            print(f"⚠️ API获取失败 {game_domain}/mods/{mod_id}: {str(e)}")
+            return None
+    
+    def get_mod_version(self, mod_name, mod_info):
+        """获取mod的版本信息"""
+        print(f"  🔄 正在获取 {mod_name} 的版本信息...")
+
+        api_result = self.get_mod_info_via_api(mod_info['game_domain'], mod_info['mod_id'])
+        if api_result:
+            print(f"  ✅ {mod_name}: {api_result.get('version', 'Unknown')}")
+            return api_result
+
+        # API失败，发送错误通知
+        error_msg = f"获取 {mod_name} 版本信息失败"
+        print(f"  ❌ {error_msg}")
+        self.send_error_notification("Mod获取失败", f"{error_msg}\nMod ID: {mod_info['mod_id']}\nURL: {mod_info['url']}")
+
+        return {
+            'version': 'Error',
+            'mod_name': 'Error',
+            'update_time': 'Error',
+            'last_checked': datetime.now().isoformat(),
+            'url': mod_info['url'],
+            'error': 'API获取失败',
+            'method': 'Failed'
+        }
     
     def load_previous_versions(self):
         """加载之前保存的版本信息"""
@@ -137,7 +198,7 @@ class ModVersionChecker:
                 with open(self.version_file, 'r', encoding='utf-8') as f:
                     return json.load(f)
             except Exception as e:
-                logging.error(f"读取版本文件失败: {str(e)}")
+                print(f"❌ 读取版本文件失败: {str(e)}")
         return {}
     
     def save_versions(self, versions):
@@ -145,12 +206,16 @@ class ModVersionChecker:
         try:
             with open(self.version_file, 'w', encoding='utf-8') as f:
                 json.dump(versions, f, ensure_ascii=False, indent=2)
-            logging.info(f"版本信息已保存到 {self.version_file}")
+            print(f"✅ 版本信息已保存到 {self.version_file}")
         except Exception as e:
-            logging.error(f"保存版本文件失败: {str(e)}")
+            print(f"❌ 保存版本文件失败: {str(e)}")
     
     def send_wechat_notification(self, message):
         """发送企业微信通知"""
+        if not self.webhook_url:
+            print("⚠️ 未配置企业微信Webhook URL，跳过通知")
+            return
+
         try:
             data = {
                 "msgtype": "text",
@@ -158,51 +223,68 @@ class ModVersionChecker:
                     "content": message
                 }
             }
-            
+
             response = requests.post(
                 self.webhook_url,
                 json=data,
                 headers={'Content-Type': 'application/json'},
                 timeout=10
             )
-            
+
             if response.status_code == 200:
                 result = response.json()
                 if result.get('errcode') == 0:
-                    logging.info("企业微信通知发送成功")
+                    print("✅ 企业微信通知发送成功")
                 else:
-                    logging.error(f"企业微信通知发送失败: {result}")
+                    print(f"❌ 企业微信通知发送失败: {result}")
             else:
-                logging.error(f"企业微信通知发送失败，状态码: {response.status_code}")
-                
+                print(f"❌ 企业微信通知发送失败，状态码: {response.status_code}")
+
         except Exception as e:
-            logging.error(f"发送企业微信通知异常: {str(e)}")
+            print(f"❌ 发送企业微信通知异常: {str(e)}")
+
+    def send_error_notification(self, error_type, error_message):
+        """发送错误通知"""
+        message = f"🚨 Mod版本检查器错误通知\n\n"
+        message += f"错误类型: {error_type}\n"
+        message += f"错误详情: {error_message}\n"
+        message += f"发生时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n"
+        message += "请检查配置或网络连接"
+
+        self.send_wechat_notification(message)
     
     def check_updates(self):
         """检查所有mod的更新"""
-        logging.info("开始检查mod版本更新...")
+        print("🔍 开始检查mod版本更新...")
+        print("=" * 50)
 
+        # 首先测试API可用性
+        if not self.test_api_availability():
+            print("❌ API不可用，终止检查")
+            return {}, []
+
+        print("\n📋 开始检查各个mod...")
         previous_versions = self.load_previous_versions()
         current_versions = {}
         updates_found = []
         errors_found = []
+        
+        total_mods = len(self.mods)
+        for index, (mod_name, mod_info) in enumerate(self.mods.items(), 1):
+            print(f"\n📦 [{index}/{total_mods}] 检查 {mod_name}...")
 
-        for mod_name, mod_url in self.mods.items():
-            logging.info(f"检查 {mod_name}...")
-
-            current_info = self.get_mod_version(mod_url)
+            current_info = self.get_mod_version(mod_name, mod_info)
             current_versions[mod_name] = current_info
 
             # 检查是否获取失败
             if current_info.get('version') == 'Error':
                 errors_found.append({
                     'name': mod_name,
-                    'url': mod_url,
+                    'url': mod_info['url'],
                     'error': current_info.get('error', 'Unknown error')
                 })
-                logging.error(f"{mod_name} 获取版本失败: {current_info.get('error', 'Unknown error')}")
-                # 添加延迟后继续下一个
-                time.sleep(2)
+                print(f"  ❌ {mod_name} 获取版本失败")
+                time.sleep(random.uniform(2, 4))
                 continue
 
             # 检查是否有更新
@@ -211,174 +293,109 @@ class ModVersionChecker:
                 prev_version = prev_info.get('version', 'Unknown')
                 curr_version = current_info.get('version', 'Unknown')
 
-                # 版本比较逻辑改进 - 传递完整信息对象
-                if self._is_version_updated(prev_info, current_info):
-                    # 确定更新类型
-                    version_changed = prev_version != curr_version
-                    time_changed = (prev_info.get('update_time', 'Unknown') !=
-                                  current_info.get('update_time', 'Unknown'))
-
-                    update_type = []
-                    if version_changed:
-                        update_type.append("版本")
-                    if time_changed:
-                        update_type.append("上传时间")
-
+                if prev_version != curr_version:
                     updates_found.append({
                         'name': mod_name,
                         'mod_display_name': current_info.get('mod_name', mod_name),
                         'old_version': prev_version,
                         'new_version': curr_version,
-                        'old_update_time': prev_info.get('update_time', 'Unknown'),
-                        'new_update_time': current_info.get('update_time', 'Unknown'),
-                        'url': mod_url,
-                        'update_type': " + ".join(update_type)
+                        'url': mod_info['url']
                     })
-
-                    update_desc = f"{mod_name}"
-                    if version_changed:
-                        update_desc += f" 版本: {prev_version} -> {curr_version}"
-                    if time_changed:
-                        update_desc += f" 时间: {prev_info.get('update_time', 'Unknown')} -> {current_info.get('update_time', 'Unknown')}"
-
-                    logging.info(f"发现更新: {update_desc}")
+                    print(f"  🆕 发现更新: {prev_version} -> {curr_version}")
+                else:
+                    print(f"  ✅ 版本无变化: {curr_version}")
             else:
-                # 首次检查，记录当前版本但不发送通知
-                logging.info(f"首次记录 {mod_name} 版本: {current_info.get('version', 'Unknown')}")
+                print(f"  📝 首次记录版本: {current_info.get('version', 'Unknown')}")
 
-            # 添加延迟避免请求过快
-            time.sleep(2)
+            # 添加延迟，避免请求过快
+            if index < total_mods:  # 最后一个不需要延迟
+                delay = random.uniform(2, 4)
+                print(f"  ⏳ 等待 {delay:.1f}s...")
+                time.sleep(delay)
+        
+        print("\n" + "=" * 50)
+        print("📊 检查结果汇总:")
 
         # 保存当前版本信息
         self.save_versions(current_versions)
 
         # 发送更新通知
         if updates_found:
-            self._send_update_notification(updates_found)
-            logging.info(f"发现 {len(updates_found)} 个mod更新")
+            self.send_update_notification(updates_found)
+            print(f"🎉 发现 {len(updates_found)} 个mod更新:")
+            for update in updates_found:
+                print(f"   - {update['name']}: {update['old_version']} -> {update['new_version']}")
         else:
-            logging.info("未发现mod更新")
+            print("✅ 所有mod都是最新版本")
 
-        # 如果有错误，记录但不发送通知（避免频繁报错）
         if errors_found:
-            logging.warning(f"有 {len(errors_found)} 个mod获取版本失败")
+            print(f"⚠️ 有 {len(errors_found)} 个mod获取失败:")
+            for error in errors_found:
+                print(f"   - {error['name']}: {error['error']}")
+
+            # 发送错误汇总通知
+            error_summary = f"共有 {len(errors_found)} 个mod获取失败:\n"
+            for error in errors_found:
+                error_summary += f"- {error['name']}\n"
+            self.send_error_notification("批量获取失败", error_summary)
+
+        success_count = len(current_versions) - len(errors_found)
+        print(f"\n📈 统计信息:")
+        print(f"   总mod数: {len(current_versions)}")
+        print(f"   成功获取: {success_count}")
+        print(f"   获取失败: {len(errors_found)}")
+        print(f"   发现更新: {len(updates_found)}")
 
         return current_versions, updates_found
-
-    def _is_version_updated(self, old_info, new_info):
-        """判断版本是否更新"""
-        old_version = old_info.get('version', 'Unknown') if isinstance(old_info, dict) else old_info
-        new_version = new_info.get('version', 'Unknown') if isinstance(new_info, dict) else new_info
-
-        # 基本检查
-        if old_version == 'Unknown' or new_version == 'Unknown':
-            return False
-        if old_version == 'Error' or new_version == 'Error':
-            return False
-
-        # 版本号比较
-        version_changed = old_version != new_version
-
-        # 上传时间比较（如果都是字典格式）
-        time_changed = False
-        if isinstance(old_info, dict) and isinstance(new_info, dict):
-            old_time = old_info.get('update_time', 'Unknown')
-            new_time = new_info.get('update_time', 'Unknown')
-
-            if old_time != 'Unknown' and new_time != 'Unknown' and old_time != new_time:
-                time_changed = True
-                logging.info(f"检测到上传时间变化: {old_time} -> {new_time}")
-
-        # 版本号变化或上传时间变化都视为更新
-        return version_changed or time_changed
-
-    def _send_update_notification(self, updates):
+    
+    def send_update_notification(self, updates):
         """发送更新通知"""
         message = "🎮 Elden Ring Night Reign Mod 更新通知:\n\n"
-
-        for update in updates:
+        
+        for update 在 updates:
             display_name = update.get('mod_display_name', update['name'])
-            update_type = update.get('update_type', '版本')
-
             message += f"📦 {display_name}\n"
-            message += f"   更新类型: {update_type}\n"
-
-            # 版本信息
-            if update['old_version'] != update['new_version']:
-                message += f"   版本: {update['old_version']} → {update['new_version']}\n"
-            else:
-                message += f"   版本: {update['new_version']}\n"
-
-            # 上传时间信息
-            old_time = update.get('old_update_time', 'Unknown')
-            new_time = update.get('new_update_time', 'Unknown')
-            if old_time != new_time and old_time != 'Unknown' and new_time != 'Unknown':
-                message += f"   上传时间: {old_time} → {new_time}\n"
-            elif new_time != 'Unknown':
-                message += f"   上传时间: {new_time}\n"
-
+            message += f"   版本: {update['old_version']} → {update['new_version']}\n"
             message += f"   链接: {update['url']}\n\n"
-
+        
         message += f"检查时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
         self.send_wechat_notification(message)
 
 def main():
     """主函数"""
-    checker = ModVersionChecker()
+    print("🎮 Elden Ring Night Reign Mod版本检查器")
+    print("=" * 50)
+    print(f"⏰ 开始时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
     try:
-        print("🎮 Elden Ring Night Reign Mod版本检查器")
-        print("=" * 50)
-
+        checker = ModVersionChecker()
         current_versions, updates = checker.check_updates()
 
-        print("\n📋 当前版本信息:")
-        print("-" * 50)
-        for mod_name, info in current_versions.items():
-            version = info.get('version', 'Unknown')
-            mod_display_name = info.get('mod_name', mod_name)
+        print(f"\n⏰ 完成时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        print("=" * 50)
 
-            if info.get('error'):
-                print(f"❌ {mod_name}: 获取失败")
-                print(f"   错误: {info['error']}")
-            else:
-                print(f"✅ {mod_display_name}")
-                print(f"   版本: {version}")
-                if info.get('update_time') and info['update_time'] != 'Unknown':
-                    print(f"   更新时间: {info['update_time']}")
-            print()
+        return len(updates) > 0  # 返回是否有更新
 
-        if updates:
-            print(f"🔔 发现 {len(updates)} 个更新!")
-            print("-" * 50)
-            for update in updates:
-                display_name = update.get('mod_display_name', update['name'])
-                update_type = update.get('update_type', '版本')
-
-                print(f"📦 {display_name}")
-                print(f"   更新类型: {update_type}")
-
-                # 显示版本变化
-                if update['old_version'] != update['new_version']:
-                    print(f"   版本: {update['old_version']} → {update['new_version']}")
-
-                # 显示时间变化
-                old_time = update.get('old_update_time', 'Unknown')
-                new_time = update.get('new_update_time', 'Unknown')
-                if old_time != new_time and old_time != 'Unknown' and new_time != 'Unknown':
-                    print(f"   上传时间: {old_time} → {new_time}")
-
-                print()
-        else:
-            print("✨ 所有mod都是最新版本")
-
-        print(f"\n⏰ 检查完成时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-
-    except KeyboardInterrupt:
-        print("\n\n⚠️ 程序被用户中断")
     except Exception as e:
-        logging.error(f"程序执行异常: {str(e)}")
-        print(f"\n❌ 程序执行异常: {str(e)}")
+        error_msg = f"❌ 程序执行异常: {str(e)}"
+        print(error_msg)
+
+        # 尝试发送错误通知
+        try:
+            checker = ModVersionChecker()
+            checker.send_error_notification("程序执行异常", str(e))
+        except:
+            pass  # 如果连初始化都失败，就不发送通知了
+
+        return False
 
 if __name__ == "__main__":
-    main()
+    # 设置控制台编码以支持Unicode字符
+    import sys
+    if sys.platform == "win32":
+        import codecs
+        sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
+        sys.stderr = codecs.getwriter("utf-8")(sys.stderr.detach())
+    
+    has_updates = main()
+    sys.exit(0 if not has_updates else 1)  # 有更新时返回1，便于GitHub Actions处理
