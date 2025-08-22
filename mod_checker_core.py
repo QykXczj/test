@@ -402,4 +402,12 @@ if __name__ == "__main__":
         sys.stderr = codecs.getwriter("utf-8")(sys.stderr.detach())
     
     has_updates = main()
-    sys.exit(0 if not has_updates else 1)  # 有更新时返回1，便于GitHub Actions处理
+    if has_updates:
+        print("发现更新，为GitHub Actions设置输出变量...")
+        # 如果在GitHub Actions环境中，则设置输出变量
+        if 'GITHUB_OUTPUT' in os.environ:
+            with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+                f.write('updates_found=true\n')
+    
+    # 始终以代码0成功退出，通过输出变量传递“有更新”的状态
+    sys.exit(0)
