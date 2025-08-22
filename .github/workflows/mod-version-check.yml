@@ -54,6 +54,7 @@ jobs:
         fi
 
     - name: Run mod version check
+      continue-on-error: true
       env:
         WEBHOOK_URL: ${{ secrets.WECHAT_WEBHOOK_URL }}
         NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
