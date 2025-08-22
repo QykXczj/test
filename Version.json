@@ -3,7 +3,7 @@
     "version": "1.04",
     "mod_name": "Seamless Co-op (Nightreign)",
     "update_time": "2025-08-13T20:30:11.000+00:00",
-    "last_checked": "2025-08-21T04:24:24.933114",
+    "last_checked": "2025-08-22T04:03:57.244775",
     "url": "https://www.nexusmods.com/eldenringnightreign/mods/3",
     "method": "API"
   },
@@ -11,7 +11,7 @@
     "version": "1.0.0.1",
     "mod_name": "Performance boost for potato pc",
     "update_time": "2025-08-16T08:49:33.000+00:00",
-    "last_checked": "2025-08-21T04:24:28.547865",
+    "last_checked": "2025-08-22T04:04:00.026208",
     "url": "https://www.nexusmods.com/eldenringnightreign/mods/17",
     "method": "API"
   },
@@ -19,7 +19,7 @@
     "version": "v25",
     "mod_name": "Fun is Allowed -  Mod Overhaul for Solos and Duos",
     "update_time": "2025-08-15T06:22:26.000+00:00",
-    "last_checked": "2025-08-21T04:24:36.765922",
+    "last_checked": "2025-08-22T04:04:04.050478",
     "url": "https://www.nexusmods.com/eldenringnightreign/mods/49",
     "method": "API"
   },
@@ -27,7 +27,7 @@
     "version": "1.0.4",
     "mod_name": "Free Reign",
     "update_time": "2025-08-14T19:30:17.000+00:00",
-    "last_checked": "2025-08-21T04:24:39.814598",
+    "last_checked": "2025-08-22T04:04:07.550597",
     "url": "https://www.nexusmods.com/eldenringnightreign/mods/141",
     "method": "API"
   },
@@ -35,7 +35,7 @@
     "version": "0.0.4",
     "mod_name": "Storm Control",
     "update_time": "2025-06-15T20:30:36.000+00:00",
-    "last_checked": "2025-08-21T04:24:42.445130",
+    "last_checked": "2025-08-22T04:04:12.038896",
     "url": "https://www.nexusmods.com/eldenringnightreign/mods/146",
     "method": "API"
   },
@@ -43,7 +43,7 @@
     "version": "0.1.2",
     "mod_name": "Dawn 'Till Dusk",
     "update_time": "2025-07-08T09:49:14.000+00:00",
-    "last_checked": "2025-08-21T04:24:45.416062",
+    "last_checked": "2025-08-22T04:04:15.284794",
     "url": "https://www.nexusmods.com/eldenringnightreign/mods/199",
     "method": "API"
   },
@@ -51,7 +51,7 @@
     "version": "1.00",
     "mod_name": "NightReign Reborn(by blue)",
     "update_time": "2025-06-30T03:22:48.000+00:00",
-    "last_checked": "2025-08-21T04:24:49.850678",
+    "last_checked": "2025-08-22T04:04:17.790450",
     "url": "https://www.nexusmods.com/eldenringnightreign/mods/244",
     "method": "API"
   },
@@ -59,15 +59,15 @@
     "version": "0.2.7",
     "mod_name": "Nightreign Ascension Mode",
     "update_time": "2025-08-06T23:18:03.000+00:00",
-    "last_checked": "2025-08-21T04:24:53.963703",
+    "last_checked": "2025-08-22T04:04:21.028663",
     "url": "https://www.nexusmods.com/eldenringnightreign/mods/171",
     "method": "API"
   },
   "smithbox更新补丁": {
     "version": "1.02.1",
-    "mod_name": "Smithbox 2.0 Param Upgrader Preset",
+    "mod_name": "Smithbox 2.0 Param Upgrader Preset (OBSOLETE)",
     "update_time": "2025-08-18T18:57:48.000+00:00",
-    "last_checked": "2025-08-21T04:24:57.254027",
+    "last_checked": "2025-08-22T04:04:24.248044",
     "url": "https://www.nexusmods.com/eldenringnightreign/mods/271",
     "method": "API"
   },
@@ -75,7 +75,7 @@
     "version": "v0.1.5",
     "mod_name": "Nightreign Randomizer and Derandomizer",
     "update_time": "2025-08-15T17:05:13.000+00:00",
-    "last_checked": "2025-08-21T04:25:01.649674",
+    "last_checked": "2025-08-22T04:04:28.647844",
     "url": "https://www.nexusmods.com/eldenringnightreign/mods/277",
     "method": "API"
   },
@@ -83,7 +83,7 @@
     "version": "1.02.1",
     "mod_name": "Nightreign Boss Overhaul Pack 1.32",
     "update_time": "2025-08-19T15:58:23.000+00:00",
-    "last_checked": "2025-08-21T04:25:05.247718",
+    "last_checked": "2025-08-22T04:04:32.509736",
     "url": "https://www.nexusmods.com/eldenringnightreign/mods/293",
     "method": "API"
   },
@@ -91,7 +91,7 @@
     "version": "1.1.6",
     "mod_name": "ELDEN VINS NIGHTREIGN",
     "update_time": "2025-08-19T08:46:29.000+00:00",
-    "last_checked": "2025-08-21T04:25:08.345422",
+    "last_checked": "2025-08-22T04:04:36.958011",
     "url": "https://www.nexusmods.com/eldenringnightreign/mods/287",
     "method": "API"
   },
@@ -99,15 +99,15 @@
     "version": "1.1.4",
     "mod_name": "ERN VINS And SeamlessCoop Smiplified Chinese",
     "update_time": "2025-08-12T14:03:36.000+00:00",
-    "last_checked": "2025-08-21T04:25:12.541220",
+    "last_checked": "2025-08-22T04:04:40.948899",
     "url": "https://www.nexusmods.com/eldenringnightreign/mods/314",
     "method": "API"
   },
   "无缝野排": {
-    "version": "1.0",
+    "version": "2.0",
     "mod_name": "lobby search",
-    "update_time": "2025-08-20T07:58:29.000+00:00",
-    "last_checked": "2025-08-21T04:25:16.136758",
+    "update_time": "2025-08-21T06:54:41.000+00:00",
+    "last_checked": "2025-08-22T04:04:43.467031",
     "url": "https://www.nexusmods.com/eldenringnightreign/mods/356",
     "method": "API"
   }
