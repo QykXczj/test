@@ -356,7 +356,7 @@ class ModVersionChecker:
         """发送更新通知"""
         message = "🎮 Elden Ring Night Reign Mod 更新通知:\n\n"
         
-        for update 在 updates:
+        for update in updates:
             display_name = update.get('mod_display_name', update['name'])
             message += f"📦 {display_name}\n"
             message += f"   版本: {update['old_version']} → {update['new_version']}\n"
