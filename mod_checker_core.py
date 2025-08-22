@@ -362,7 +362,7 @@ class ModVersionChecker:
             message += f"   版本: {update['old_version']} → {update['new_version']}\n"
             message += f"   链接: {update['url']}\n\n"
         
-        message += f"检查时间: {datetime.当前()。strftime('%Y-%m-%d %H:%M:%S')}"
+        message += f"检查时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
         self.send_wechat_notification(message)
 
 def main():
@@ -375,7 +375,7 @@ def main():
         checker = ModVersionChecker()
         current_versions, updates = checker.check_updates()
 
-        print(f"\n⏰ 完成时间: {datetime.当前().strftime('%Y-%m-%d %H:%M:%S')}")
+        print(f"\n⏰ 完成时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         print("=" * 50)
 
         return len(updates) > 0  # 返回是否有更新
