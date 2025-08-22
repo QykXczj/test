@@ -381,7 +381,7 @@ class ModVersionChecker:
                 message += f"   版本: {update['old_version']} → {update['new_version']}\n"
             message += f"   链接: {update['url']}\n\n"
         
-        message += f"检查时间: {datetime.当前().strftime('%Y-%m-%d %H:%M:%S')}"
+        message += f"检查时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
         self.send_wechat_notification(message)
 
 def main():
@@ -417,14 +417,14 @@ if __name__ == "__main__":
     import sys
     if sys.platform == "win32":
         import codecs
-        sys.stdout = codecs.getwriter("utf-8")(sys.stdout。detach())
+        sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
         sys.stderr = codecs.getwriter("utf-8")(sys.stderr.detach())
     
     has_updates = main()
     if has_updates:
         print("发现更新，为GitHub Actions设置输出变量...")
         # 如果在GitHub Actions环境中，则设置输出变量
-        if 'GITHUB_OUTPUT' 在 os.environ:
+        if 'GITHUB_OUTPUT' in os.environ:
             with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
                 f.write('updates_found=true\n')
     
