@@ -13,6 +13,10 @@ import random
 from datetime import datetime
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
+import functools
+
+# 强制print函数立即刷新缓冲区，解决无实时输出问题
+print = functools.partial(print, flush=True)
 
 # 尝试加载.env文件
 try:
@@ -352,7 +356,7 @@ class ModVersionChecker:
         """发送更新通知"""
         message = "🎮 Elden Ring Night Reign Mod 更新通知:\n\n"
         
-        for update in updates:
+        for update 在 updates:
             display_name = update.get('mod_display_name', update['name'])
             message += f"📦 {display_name}\n"
             message += f"   版本: {update['old_version']} → {update['new_version']}\n"
@@ -365,7 +369,7 @@ def main():
     """主函数"""
     print("🎮 Elden Ring Night Reign Mod版本检查器")
     print("=" * 50)
-    print(f"⏰ 开始时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"⏰ 开始时间: {datetime.当前().strftime('%Y-%m-%d %H:%M:%S')}")
 
     try:
         checker = ModVersionChecker()
