@@ -157,11 +157,13 @@ class ModVersionChecker:
             # 构建返回信息
             version = latest_file.get('version', 'Unknown') if latest_file else data.get('version', 'Unknown')
             update_time = latest_file.get('uploaded_time', 'Unknown') if latest_file else data.get('updated_time', 'Unknown')
-            
+            upload_timestamp = latest_file.get('uploaded_timestamp', 0) if latest_file else data.get('updated_timestamp', 0)
+
             return {
                 'version': version,
                 'mod_name': data.get('name', 'Unknown'),
                 'update_time': update_time,
+                'upload_timestamp': upload_timestamp, # 添加用于精确比对的时间戳
                 'last_checked': datetime.now().isoformat(),
                 'url': f"https://www.nexusmods.com/{game_domain}/mods/{mod_id}",
                 'method': 'API'
@@ -295,17 +297,26 @@ class ModVersionChecker:
             if mod_name in previous_versions:
                 prev_info = previous_versions[mod_name]
                 prev_version = prev_info.get('version', 'Unknown')
+                prev_timestamp = prev_info.get('upload_timestamp', 0)
+                
                 curr_version = current_info.get('version', 'Unknown')
+                curr_timestamp = current_info.get('upload_timestamp', 0)
 
-                if prev_version != curr_version:
-                    updates_found.append({
+                if prev_version != curr_version or prev_timestamp != curr_timestamp:
+                    update_info = {
                         'name': mod_name,
                         'mod_display_name': current_info.get('mod_name', mod_name),
                         'old_version': prev_version,
                         'new_version': curr_version,
                         'url': mod_info['url']
-                    })
-                    print(f"  🆕 发现更新: {prev_version} -> {curr_version}")
+                    }
+                    if prev_version != curr_version:
+                        print(f"  🆕 发现版本更新: {prev_version} -> {curr_version}")
+                        update_info['update_type'] = 'version'
+                    else:
+                        print(f"  🆕 发现文件更新 (版本号未变): {prev_version}")
+                        update_info['update_type'] = 'file'
+                    updates_found.append(update_info)
                 else:
                     print(f"  ✅ 版本无变化: {curr_version}")
             else:
@@ -358,11 +369,19 @@ class ModVersionChecker:
         
         for update in updates:
             display_name = update.get('mod_display_name', update['name'])
+            update_type = update.get('update_type')
+
             message += f"📦 {display_name}\n"
-            message += f"   版本: {update['old_version']} → {update['new_version']}\n"
+            if update_type == 'version':
+                message += f"   🔥 版本更新: {update['old_version']} → {update['new_version']}\n"
+            elif update_type == 'file':
+                message += f"   ✨ 文件更新 (版本号未变: {update['new_version']})\n"
+            else:
+                # 兼容旧数据或未知情况
+                message += f"   版本: {update['old_version']} → {update['new_version']}\n"
             message += f"   链接: {update['url']}\n\n"
         
-        message += f"检查时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+        message += f"检查时间: {datetime.当前()。strftime('%Y-%m-%d %H:%M:%S')}"
         self.send_wechat_notification(message)
 
 def main():
@@ -398,14 +417,14 @@ if __name__ == "__main__":
     import sys
     if sys.platform == "win32":
         import codecs
-        sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
+        sys.stdout = codecs.getwriter("utf-8")(sys.stdout。detach())
         sys.stderr = codecs.getwriter("utf-8")(sys.stderr.detach())
     
     has_updates = main()
     if has_updates:
         print("发现更新，为GitHub Actions设置输出变量...")
         # 如果在GitHub Actions环境中，则设置输出变量
-        if 'GITHUB_OUTPUT' in os.environ:
+        if 'GITHUB_OUTPUT' 在 os.environ:
             with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
                 f.write('updates_found=true\n')
     
