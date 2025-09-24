@@ -159,9 +159,15 @@ class ModVersionChecker:
             update_time = latest_file.get('uploaded_time', 'Unknown') if latest_file else data.get('updated_time', 'Unknown')
             upload_timestamp = latest_file.get('uploaded_timestamp', 0) if latest_file else data.get('updated_timestamp', 0)
 
+            # 分别保存mod版本和文件版本
+            mod_version = data.get('version', 'Unknown')
+            file_version = latest_file.get('version', 'Unknown') if latest_file else None
+
             return {
                 'version': version,
                 'mod_name': data.get('name', 'Unknown'),
+                'mod_version': mod_version,  # 添加mod整体版本
+                'file_version': file_version,  # 添加文件版本
                 'update_time': update_time,
                 'upload_timestamp': upload_timestamp, # 添加用于精确比对的时间戳
                 'last_checked': datetime.now().isoformat(),
@@ -308,6 +314,8 @@ class ModVersionChecker:
                         'mod_display_name': current_info.get('mod_name', mod_name),
                         'old_version': prev_version,
                         'new_version': curr_version,
+                        'mod_version': current_info.get('mod_version', 'Unknown'),  # 添加mod版本
+                        'file_version': current_info.get('file_version', 'Unknown'),  # 添加文件版本
                         'url': mod_info['url']
                     }
                     if prev_version != curr_version:
@@ -370,6 +378,8 @@ class ModVersionChecker:
         for update in updates:
             display_name = update.get('mod_display_name', update['name'])
             update_type = update.get('update_type')
+            mod_version = update.get('mod_version', 'Unknown')
+            file_version = update.get('file_version', 'Unknown')
 
             message += f"📦 {display_name}\n"
             if update_type == 'version':
@@ -379,6 +389,13 @@ class ModVersionChecker:
             else:
                 # 兼容旧数据或未知情况
                 message += f"   版本: {update['old_version']} → {update['new_version']}\n"
+
+            # 显示mod版本和文件版本的详细信息
+            if file_version and file_version != 'Unknown' and mod_version != file_version:
+                message += f"   📋 Mod版本: {mod_version} | 文件版本: {file_version}\n"
+            elif mod_version and mod_version != 'Unknown':
+                message += f"   📋 版本信息: {mod_version}\n"
+
             message += f"   链接: {update['url']}\n\n"
         
         message += f"检查时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
