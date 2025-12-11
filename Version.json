@@ -6,7 +6,7 @@
     "file_version": "1.0.7",
     "update_time": "2025-12-04T18:00:10.000+00:00",
     "upload_timestamp": 1764871210,
-    "last_checked": "2025-12-07T08:29:26.077933",
+    "last_checked": "2025-12-11T02:00:54.560189",
     "url": "https://www.nexusmods.com/eldenringnightreign/mods/3",
     "method": "API"
   },
@@ -17,7 +17,7 @@
     "file_version": "1.0.0.1",
     "update_time": "2025-12-05T17:30:33.000+00:00",
     "upload_timestamp": 1764955833,
-    "last_checked": "2025-12-07T08:29:29.783098",
+    "last_checked": "2025-12-11T02:00:58.804513",
     "url": "https://www.nexusmods.com/eldenringnightreign/mods/17",
     "method": "API"
   },
@@ -28,7 +28,7 @@
     "file_version": null,
     "update_time": "2025-12-07T07:15:21.000+00:00",
     "upload_timestamp": 1765091721,
-    "last_checked": "2025-12-07T08:29:33.438583",
+    "last_checked": "2025-12-11T02:01:02.966757",
     "url": "https://www.nexusmods.com/eldenringnightreign/mods/49",
     "method": "API"
   },
@@ -36,10 +36,10 @@
     "version": "1.0.8",
     "mod_name": "Free Reign",
     "mod_version": "1.0.8",
-    "file_version": "1.0.8",
+    "file_version": null,
     "update_time": "2025-10-07T14:56:28.000+00:00",
     "upload_timestamp": 1759848988,
-    "last_checked": "2025-12-07T08:29:36.455325",
+    "last_checked": "2025-12-11T02:01:05.622316",
     "url": "https://www.nexusmods.com/eldenringnightreign/mods/141",
     "method": "API"
   },
@@ -50,7 +50,7 @@
     "file_version": "1.0.1",
     "update_time": "2025-12-05T20:54:59.000+00:00",
     "upload_timestamp": 1764968099,
-    "last_checked": "2025-12-07T08:29:38.941381",
+    "last_checked": "2025-12-11T02:01:08.735092",
     "url": "https://www.nexusmods.com/eldenringnightreign/mods/146",
     "method": "API"
   },
@@ -61,7 +61,7 @@
     "file_version": "0.1.2",
     "update_time": "2025-07-08T09:49:14.000+00:00",
     "upload_timestamp": 1751968154,
-    "last_checked": "2025-12-07T08:29:42.852219",
+    "last_checked": "2025-12-11T02:01:12.907128",
     "url": "https://www.nexusmods.com/eldenringnightreign/mods/199",
     "method": "API"
   },
@@ -72,7 +72,7 @@
     "file_version": "1.00",
     "update_time": "2025-06-30T03:22:48.000+00:00",
     "upload_timestamp": 1751253768,
-    "last_checked": "2025-12-07T08:29:46.847878",
+    "last_checked": "2025-12-11T02:01:15.451065",
     "url": "https://www.nexusmods.com/eldenringnightreign/mods/244",
     "method": "API"
   },
@@ -83,7 +83,7 @@
     "file_version": "0.2.7",
     "update_time": "2025-08-06T23:18:03.000+00:00",
     "upload_timestamp": 1754522283,
-    "last_checked": "2025-12-07T08:29:50.450005",
+    "last_checked": "2025-12-11T02:01:19.183796",
     "url": "https://www.nexusmods.com/eldenringnightreign/mods/171",
     "method": "API"
   },
@@ -94,7 +94,7 @@
     "file_version": "v0.1.6c",
     "update_time": "2025-10-10T06:05:04.000+00:00",
     "upload_timestamp": 1760076304,
-    "last_checked": "2025-12-07T08:29:53.850474",
+    "last_checked": "2025-12-11T02:01:22.797631",
     "url": "https://www.nexusmods.com/eldenringnightreign/mods/277",
     "method": "API"
   },
@@ -105,7 +105,7 @@
     "file_version": "1.02.4",
     "update_time": "2025-11-14T01:05:21.000+00:00",
     "upload_timestamp": 1763082321,
-    "last_checked": "2025-12-07T08:29:57.239156",
+    "last_checked": "2025-12-11T02:01:26.745286",
     "url": "https://www.nexusmods.com/eldenringnightreign/mods/293",
     "method": "API"
   },
@@ -116,7 +116,7 @@
     "file_version": "1.4",
     "update_time": "2025-11-01T19:15:33.000+00:00",
     "upload_timestamp": 1762024533,
-    "last_checked": "2025-12-07T08:30:01.384745",
+    "last_checked": "2025-12-11T02:01:29.874695",
     "url": "https://www.nexusmods.com/eldenringnightreign/mods/287",
     "method": "API"
   },
@@ -127,7 +127,7 @@
     "file_version": "1.8.3-1.2.6",
     "update_time": "2025-10-14T06:06:10.000+00:00",
     "upload_timestamp": 1760421970,
-    "last_checked": "2025-12-07T08:30:04.659821",
+    "last_checked": "2025-12-11T02:01:32.921592",
     "url": "https://www.nexusmods.com/eldenringnightreign/mods/289",
     "method": "API"
   },
@@ -138,7 +138,7 @@
     "file_version": "1.04",
     "update_time": "2025-11-26T17:05:53.000+00:00",
     "upload_timestamp": 1764176753,
-    "last_checked": "2025-12-07T08:30:07.619217",
+    "last_checked": "2025-12-11T02:01:36.802742",
     "url": "https://www.nexusmods.com/eldenringnightreign/mods/430",
     "method": "API"
   },
@@ -149,7 +149,7 @@
     "file_version": "1.0.3",
     "update_time": "2025-10-07T09:40:23.000+00:00",
     "upload_timestamp": 1759830023,
-    "last_checked": "2025-12-07T08:30:10.632433",
+    "last_checked": "2025-12-11T02:01:39.332968",
     "url": "https://www.nexusmods.com/eldenringnightreign/mods/383",
     "method": "API"
   },
@@ -160,18 +160,18 @@
     "file_version": "0.1",
     "update_time": "2025-09-27T12:39:11.000+00:00",
     "upload_timestamp": 1758976751,
-    "last_checked": "2025-12-07T08:30:14.068232",
+    "last_checked": "2025-12-11T02:01:43.095166",
     "url": "https://www.nexusmods.com/eldenringnightreign/mods/414",
     "method": "API"
   },
   "boss练习": {
-    "version": "2.2.2",
+    "version": "2.9",
     "mod_name": "Boss Arena",
-    "mod_version": "2.2.2",
-    "file_version": "2.2.2",
-    "update_time": "2025-11-28T22:11:38.000+00:00",
-    "upload_timestamp": 1764367898,
-    "last_checked": "2025-12-07T08:30:17.414931",
+    "mod_version": "2.9",
+    "file_version": "2.9",
+    "update_time": "2025-12-11T01:16:16.000+00:00",
+    "upload_timestamp": 1765415776,
+    "last_checked": "2025-12-11T02:01:46.409073",
     "url": "https://www.nexusmods.com/eldenringnightreign/mods/449",
     "method": "API"
   },
@@ -182,7 +182,7 @@
     "file_version": "0.1",
     "update_time": "2025-10-05T23:58:28.000+00:00",
     "upload_timestamp": 1759708708,
-    "last_checked": "2025-12-07T08:30:20.926451",
+    "last_checked": "2025-12-11T02:01:48.842568",
     "url": "https://www.nexusmods.com/eldenringnightreign/mods/448",
     "method": "API"
   },
@@ -193,7 +193,7 @@
     "file_version": "v1.02.4",
     "update_time": "2025-11-06T04:15:50.000+00:00",
     "upload_timestamp": 1762402550,
-    "last_checked": "2025-12-07T08:30:24.765266",
+    "last_checked": "2025-12-11T02:01:51.342227",
     "url": "https://www.nexusmods.com/eldenringnightreign/mods/422",
     "method": "API"
   }
